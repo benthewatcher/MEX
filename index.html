@@ -186,9 +186,18 @@
   #printPO th, #printPO td{padding:8px 6px; border-bottom:1px solid #eee; text-align:left; vertical-align:middle;}
   #printPO th{font-size:9px; text-transform:uppercase; letter-spacing:1px; color:#888; border-bottom:2px solid #111; font-weight:700;}
   #printPO td.right, #printPO th.right{text-align:right;}
-  #printPO .ppo-total{margin-top:10px; padding-top:10px; border-top:2px solid #111; display:flex; justify-content:space-between; font-weight:700; font-size:16px;}
-  #printPO .ppo-thumb{width:34px; height:34px; object-fit:contain;}
+  #printPO .ppo-total{margin-top:14px; padding-top:12px; border-top:2px solid #111; display:flex; justify-content:space-between; font-weight:700; font-size:18px;}
   #printPO .ppo-foot{margin-top:20px; padding-top:10px; border-top:1px solid #eee; font-size:10px; color:#777; line-height:1.6;}
+  #printPO .ppo-card{border:1px solid #ddd; border-radius:10px; padding:14px 16px; margin-bottom:12px; page-break-inside:avoid;}
+  #printPO .ppo-card-imgs{display:flex; align-items:center; justify-content:center; gap:12px; margin:4px 0 12px; background:#F4F4F2; border-radius:8px; padding:14px 8px;}
+  #printPO .ppo-watch{width:220px; height:220px; object-fit:contain; display:block;}
+  #printPO .ppo-box{width:160px; height:160px; object-fit:contain; display:block;}
+  #printPO .ppo-card-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;}
+  #printPO .ppo-card-sku{font-family:'Anton',sans-serif; font-size:18px; letter-spacing:1.5px; color:#111;}
+  #printPO .ppo-card-model{font-weight:700; font-size:14px; color:#111;}
+  #printPO .ppo-card-opts{font-size:11px; color:#666; margin-top:3px; line-height:1.5;}
+  #printPO .ppo-card-row{display:flex; justify-content:space-between; font-size:12px; margin-top:10px; padding-top:10px; border-top:1px solid #eee;}
+  #printPO .ppo-card-row .lt{font-weight:700; font-size:15px;}
 </style>
 </head>
 <body>
@@ -555,7 +564,7 @@ $("next").onclick=()=>cycle(1);
 const ADMIN_EMAIL = 'bw@minc.watch';
 const LEAD_TIME   = '~12 weeks from PO';
 state.builds = [];
-state.po = { name:'', company:'', email:'', notes:'' };
+state.po = { name:'Rocardo San Roman', company:'', email:'', notes:'' };
 
 function sfmxSku(n){ return 'SFMX' + String(n+1).padStart(2,'0'); }
 
@@ -737,17 +746,25 @@ let _printRef = '';
 function renderPrintPO(){
   if(!_printRef) _printRef = refNumber();
   const date = new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
-  const rows = state.builds.map(b=>{
+  const boxImg = IMAGES.box_soccer || '';
+  const cards = state.builds.map(b=>{
     const img = IMAGES[b.imgKey] || IMAGES[(b.imgKey||'').replace(/_carbon_/,'_standard_')] || '';
     const meta = [b.optionsByCat[1], b.optionsByCat[2], b.optionsByCat[3]].filter(Boolean).join(' · ');
-    return `<tr>
-      <td><img class="ppo-thumb" src="${img}" alt=""></td>
-      <td><b>${b.sku}</b></td>
-      <td>${escHtml(b.modelLabel)}<br><span style="font-size:10px;color:#777">${escHtml(meta)}${b.extraStraps?` · +${b.extraStraps} straps`:''}</span></td>
-      <td class="right">${b.qty.toLocaleString('en-US')}</td>
-      <td class="right">${money2(b.perUnit)}</td>
-      <td class="right">${money(b.lineTotal)}</td>
-    </tr>`;
+    return `<div class="ppo-card">
+      <div class="ppo-card-head">
+        <div class="ppo-card-sku">${b.sku}</div>
+        <div class="ppo-card-model">${escHtml(b.modelLabel)}</div>
+      </div>
+      <div class="ppo-card-opts">${escHtml(meta)}${b.extraStraps?` · +${b.extraStraps} extra straps`:''}</div>
+      <div class="ppo-card-imgs">
+        <img class="ppo-watch" src="${img}" alt="Configured watch">
+        ${boxImg?`<img class="ppo-box" src="${boxImg}" alt="Presentation box">`:''}
+      </div>
+      <div class="ppo-card-row">
+        <span>${b.qty.toLocaleString('en-US')} units × ${money2(b.perUnit)}</span>
+        <span class="lt">${money(b.lineTotal)}</span>
+      </div>
+    </div>`;
   }).join('');
   $('printPO').innerHTML = `
     <div class="ppo-head">
@@ -770,10 +787,7 @@ function renderPrintPO(){
     </div>
     <div class="ppo-section">
       <h3>Models</h3>
-      <table>
-        <thead><tr><th></th><th>SKU</th><th>Model</th><th class="right">Qty</th><th class="right">Unit</th><th class="right">Line total</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
+      ${cards}
       <div class="ppo-total"><span>Total · ${combinedQty().toLocaleString('en-US')} units</span><span>${money(combinedTotal())}</span></div>
     </div>
     ${state.po.notes ? `<div class="ppo-section"><h3>Notes</h3><div style="font-size:11px;white-space:pre-wrap;line-height:1.6;">${escHtml(state.po.notes)}</div></div>` : ''}
