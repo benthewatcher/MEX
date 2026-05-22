@@ -194,6 +194,36 @@
   .trial .t-fbz .fb-r{display:flex; justify-content:space-between; font-size:11.5px; padding:2px 0;}
   .trial .t-fbz .fb-r .v{font-weight:700;}
   .trial .t-assume{margin-top:10px; padding-top:8px; border-top:1px dashed var(--line); font-size:10.5px; color:var(--muted); line-height:1.55;}
+
+  /* ---- Trial sliders ---- */
+  .t-sliders{margin:12px 0 4px; padding:12px 14px; background:#fff; border-radius:10px; border:1px solid var(--line);}
+  .t-slider{margin:8px 0;}
+  .t-slider:first-child{margin-top:0;}
+  .t-slider-row{display:flex; justify-content:space-between; align-items:baseline; gap:8px;}
+  .t-slider-label{font-size:11px; font-weight:600; color:var(--ink); text-transform:uppercase; letter-spacing:.5px;}
+  .t-slider-label small{font-size:10px; font-weight:400; color:var(--muted); text-transform:none; letter-spacing:0;}
+  .t-slider-value{font-family:'Anton',sans-serif; font-size:20px; letter-spacing:.5px; color:var(--accent);}
+  .t-slider input[type=range]{
+    width:100%; -webkit-appearance:none; appearance:none;
+    height:6px; background:linear-gradient(to right, var(--accent) 0%, var(--accent) var(--p,100%), #e5e5e5 var(--p,100%), #e5e5e5 100%);
+    border-radius:3px; outline:none; margin:8px 0 2px;
+  }
+  .t-slider input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; appearance:none;
+    width:22px; height:22px; border-radius:50%;
+    background:#fff; border:2px solid var(--ink); cursor:grab;
+    box-shadow:0 1px 4px rgba(0,0,0,.18);
+  }
+  .t-slider input[type=range]::-webkit-slider-thumb:active{cursor:grabbing;}
+  .t-slider input[type=range]::-moz-range-thumb{
+    width:22px; height:22px; border-radius:50%;
+    background:#fff; border:2px solid var(--ink); cursor:grab; box-shadow:0 1px 4px rgba(0,0,0,.18);
+  }
+  .t-slider-scale{display:flex; justify-content:space-between; font-size:9.5px; color:var(--muted); margin-top:2px; letter-spacing:.3px;}
+  .t-live-row{display:flex; justify-content:space-between; padding:3px 0; font-size:13px;}
+  .t-live-row.profit{font-weight:700; border-top:1px solid var(--line); margin-top:4px; padding-top:6px; font-size:14px;}
+  .t-live-row .val.green{color:#0a7a3f;}
+  .t-live-row .val.red{color:#c0392b;}
   .po-form{display:flex; flex-direction:column; gap:6px; margin:6px 0 4px;}
   .po-form label{font-size:11px; color:var(--muted); margin:4px 0 -2px; text-transform:uppercase; letter-spacing:.5px;}
   .po-form input, .po-form textarea{width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px; font-family:inherit; font-size:14px; box-sizing:border-box; color:var(--ink); background:#fff;}
@@ -758,6 +788,7 @@ function poAggregateLeadTime(){
 }
 state.builds = [];
 state.po = { name:'Rocardo San Roman', company:'', email:'', notes:'' };
+state.trial = { freebiePct: 15, sellThroughPct: 100 };
 
 function sfmxSku(n){ return 'SFMX' + String(n+1).padStart(2,'0'); }
 
@@ -817,57 +848,104 @@ function trialTotals(){
 
 function renderTrialHTML(){
   const t = trialTotals();
-  const whoProfit = t.wholesaleRevenue - t.totalCogs;
-  const conProfit = t.consignmentPayout - t.totalCogs;
-  // Freebie scenarios: assume X% of units given as merchandising freebies.
-  // We still pay COGS on all units; revenue side scales by (1 - freebie%).
-  const scen = (fb)=>{
-    const whoRev = t.wholesaleRevenue * (1 - fb);
-    const conRev = t.consignmentPayout * (1 - fb);
-    return {
-      fbPct: Math.round(fb*100),
-      whoRev, whoProfit: whoRev - t.totalCogs,
-      conRev, conProfit: conRev - t.totalCogs,
-    };
-  };
-  const lo = scen(FREEBIE_LOW), hi = scen(FREEBIE_HIGH);
+  const sl = state.trial;
   return `<div class="trial">
     <h4>Store Trial · 3-model collection</h4>
-    <div class="t-sub">Aggregate economics across your full collection at the quantities you've selected. Retail prices are fixed MSRP. Wholesale = store buys upfront. Consignment = store keeps a share, we receive the rest on each sale.</div>
+    <div class="t-sub">Aggregate economics across your full collection at the quantities you've selected. Retail at fixed MSRP. Wholesale = store buys upfront (no sell-through risk to us). Consignment = store keeps a share, we receive the rest on each sale (sell-through varies). Drag the sliders to model scenarios.</div>
 
     <div class="t-section">
       <h5>Volume</h5>
-      <div class="t-row"><span>Total units</span><span class="val">${t.totalUnits.toLocaleString('en-US')}</span></div>
+      <div class="t-row"><span>Total units shipped</span><span class="val">${t.totalUnits.toLocaleString('en-US')}</span></div>
       <div class="t-row"><span>Total COGS (true unit cost × units)</span><span class="val">${money(t.totalCogs)}</span></div>
       <div class="t-row"><span>Gross retail value @ MSRP</span><span class="val">${money(t.retailRevenue)}</span></div>
     </div>
 
-    <div class="t-section">
-      <h5>Wholesale path</h5>
-      <div class="t-row"><span>Revenue (store buys upfront)</span><span class="val">${money(t.wholesaleRevenue)}</span></div>
-      <div class="t-row"><span>Less COGS</span><span class="val">−${money(t.totalCogs)}</span></div>
-      <div class="t-row total"><span>Our profit</span><span class="val green">${money(whoProfit)}</span></div>
+    <div class="t-sliders">
+      <div class="t-slider">
+        <div class="t-slider-row">
+          <span class="t-slider-label">Consignment sell-through <small>· % of shipped units that sell</small></span>
+          <span class="t-slider-value" id="trSellVal">${sl.sellThroughPct}%</span>
+        </div>
+        <input type="range" id="trSell" min="0" max="100" value="${sl.sellThroughPct}" style="--p:${sl.sellThroughPct}%">
+        <div class="t-slider-scale"><span>0%</span><span>50%</span><span>100%</span></div>
+      </div>
+      <div class="t-slider">
+        <div class="t-slider-row">
+          <span class="t-slider-label">Merchandising freebies <small>· % of units given to store free</small></span>
+          <span class="t-slider-value" id="trFbVal">${sl.freebiePct}%</span>
+        </div>
+        <input type="range" id="trFb" min="0" max="50" value="${sl.freebiePct}" style="--p:${sl.freebiePct*2}%">
+        <div class="t-slider-scale"><span>0%</span><span>25%</span><span>50%</span></div>
+      </div>
     </div>
 
     <div class="t-section">
-      <h5>Consignment path (full sell-through)</h5>
-      <div class="t-row"><span>Our payout from sales</span><span class="val">${money(t.consignmentPayout)}</span></div>
-      <div class="t-row"><span>Less COGS</span><span class="val">−${money(t.totalCogs)}</span></div>
-      <div class="t-row total"><span>Our profit</span><span class="val green">${money(conProfit)}</span></div>
+      <h5>Wholesale path <small style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">(store buys upfront — sell-through not applicable)</small></h5>
+      <div class="t-live-row"><span>Gross wholesale revenue</span><span class="val" id="trWhoGross">—</span></div>
+      <div class="t-live-row"><span>Less freebies (we give free)</span><span class="val" id="trWhoFbLoss">—</span></div>
+      <div class="t-live-row"><span>Net wholesale revenue</span><span class="val" id="trWhoNet">—</span></div>
+      <div class="t-live-row"><span>Less COGS (we make every unit)</span><span class="val">−${money(t.totalCogs)}</span></div>
+      <div class="t-live-row profit"><span>Our wholesale profit</span><span class="val" id="trWhoProfit">—</span></div>
     </div>
 
-    <div class="t-fbz">
-      <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.7px; color:var(--muted); margin-bottom:6px;">After merchandising freebies (10–20% of units given free)</div>
-      <div class="fb-r"><span>Wholesale profit @ 10% freebies</span><span class="v">${money(lo.whoProfit)}</span></div>
-      <div class="fb-r"><span>Wholesale profit @ 20% freebies</span><span class="v">${money(hi.whoProfit)}</span></div>
-      <div class="fb-r" style="margin-top:4px;border-top:1px dashed var(--line);padding-top:6px;"><span>Consignment profit @ 10% freebies</span><span class="v">${money(lo.conProfit)}</span></div>
-      <div class="fb-r"><span>Consignment profit @ 20% freebies</span><span class="v">${money(hi.conProfit)}</span></div>
+    <div class="t-section">
+      <h5>Consignment path</h5>
+      <div class="t-live-row"><span>Gross consignment payout @ 100%</span><span class="val">${money(t.consignmentPayout)}</span></div>
+      <div class="t-live-row"><span>After sell-through</span><span class="val" id="trConAfterSt">—</span></div>
+      <div class="t-live-row"><span>After freebies</span><span class="val" id="trConAfterFb">—</span></div>
+      <div class="t-live-row"><span>Less COGS (we make every unit)</span><span class="val">−${money(t.totalCogs)}</span></div>
+      <div class="t-live-row profit"><span>Our consignment profit</span><span class="val" id="trConProfit">—</span></div>
     </div>
 
     <div class="t-assume">
-      <b>Assumptions:</b> Retail prices fixed at MSRP. Unsold consignment stock remains our property. Sales reconciled monthly. Stores may not discount without written approval. Box cost rule: $8.90 if watch cost > $40, else $6.90. Merchandising freebies: 10–20% of units shipped given to store for marketing / sampling at zero revenue but full COGS.
+      <b>Assumptions:</b> Retail prices fixed at MSRP. Unsold consignment stock remains our property. Sales reconciled monthly. Stores may not discount without written approval. Box cost rule: $8.90 if watch cost > $40, else $6.90. Freebies are units shipped to the store at zero revenue but full COGS (we manufacture them). Sell-through scenarios apply only to consignment (wholesale is paid upfront on all paid units). Default scenario: ${sl.sellThroughPct}% sell-through, ${sl.freebiePct}% freebies.
     </div>
   </div>`;
+}
+
+function applyTrialSliders(){
+  const t = trialTotals();
+  if(!state.builds.length || state.builds.length < COLLECTION_SIZE) return;
+  const fb = (state.trial.freebiePct||0) / 100;
+  const st = (state.trial.sellThroughPct||0) / 100;
+  // Wholesale: no sell-through (store buys upfront), only freebies
+  const whoGross = t.wholesaleRevenue;
+  const whoFbLoss = whoGross * fb;
+  const whoNet = whoGross - whoFbLoss;
+  const whoProfit = whoNet - t.totalCogs;
+  // Consignment: sell-through first, then freebies subtracted on top
+  const conAfterSt = t.consignmentPayout * st;
+  const conAfterFb = conAfterSt * (1 - fb);
+  const conProfit = conAfterFb - t.totalCogs;
+
+  const set = (id, v, cls) => { const el = $(id); if(!el) return; el.textContent = v; if(cls!==undefined){ el.className = 'val '+cls; } };
+  set('trWhoGross',   money(whoGross));
+  set('trWhoFbLoss',  '−'+money(whoFbLoss));
+  set('trWhoNet',     money(whoNet));
+  set('trWhoProfit',  money(whoProfit), whoProfit>=0?'green':'red');
+  set('trConAfterSt', money(conAfterSt));
+  set('trConAfterFb', money(conAfterFb));
+  set('trConProfit',  money(conProfit), conProfit>=0?'green':'red');
+}
+
+function bindTrialSliders(){
+  const sell = $('trSell'), fb = $('trFb');
+  if(!sell || !fb) return;
+  const onSell = ()=>{
+    state.trial.sellThroughPct = +sell.value;
+    sell.style.setProperty('--p', sell.value+'%');
+    $('trSellVal').textContent = sell.value+'%';
+    applyTrialSliders();
+  };
+  const onFb = ()=>{
+    state.trial.freebiePct = +fb.value;
+    fb.style.setProperty('--p', (fb.value*2)+'%');
+    $('trFbVal').textContent = fb.value+'%';
+    applyTrialSliders();
+  };
+  sell.oninput = onSell;
+  fb.oninput = onFb;
+  applyTrialSliders();
 }
 
 function renderBuildList(){
@@ -931,6 +1009,7 @@ function renderBuildList(){
     b.onclick = ()=> removeBuild(+b.dataset.i);
   });
   const pl = $('poLead'); if(pl) pl.textContent = 'Lead time: ' + poAggregateLeadTime();
+  bindTrialSliders();
 }
 
 function readPOForm(){
@@ -1092,52 +1171,49 @@ function renderPrintPO(){
   let trialHtml = '';
   if(state.builds.length >= COLLECTION_SIZE){
     const t = trialTotals();
-    const whoProfit = t.wholesaleRevenue - t.totalCogs;
-    const conProfit = t.consignmentPayout - t.totalCogs;
-    const scen = (fb)=>({
-      whoProfit: t.wholesaleRevenue*(1-fb) - t.totalCogs,
-      conProfit: t.consignmentPayout*(1-fb) - t.totalCogs,
-    });
-    const lo = scen(FREEBIE_LOW), hi = scen(FREEBIE_HIGH);
+    const fb = (state.trial.freebiePct||0)/100, st = (state.trial.sellThroughPct||0)/100;
+    const whoGross = t.wholesaleRevenue;
+    const whoFbLoss = whoGross * fb;
+    const whoNet = whoGross - whoFbLoss;
+    const whoProfit = whoNet - t.totalCogs;
+    const conAfterSt = t.consignmentPayout * st;
+    const conAfterFb = conAfterSt * (1 - fb);
+    const conProfit = conAfterFb - t.totalCogs;
+    const sgn = n => n >= 0 ? 'green' : '';
     trialHtml = `<div class="ppo-trial">
       <h3>Store Trial · ${state.builds.length}-Model Collection Economics</h3>
-      <div class="pt-sub">Aggregate trial economics for the full collection at the quantities selected. Retail at fixed MSRP. Wholesale = store buys upfront. Consignment = store keeps a share, we receive the rest on each sale.</div>
+      <div class="pt-sub">Scenario: <b>${state.trial.sellThroughPct}% sell-through</b> · <b>${state.trial.freebiePct}% merchandising freebies</b>. Retail at fixed MSRP. Wholesale = store buys upfront. Consignment = we receive a share per sale.</div>
 
       <div class="pt-section"><h4>Volume</h4>
         <table>
-          <tr><td>Total units</td><td class="right">${t.totalUnits.toLocaleString('en-US')}</td></tr>
+          <tr><td>Total units shipped</td><td class="right">${t.totalUnits.toLocaleString('en-US')}</td></tr>
           <tr><td>Total COGS (true unit cost × units)</td><td class="right">${money(t.totalCogs)}</td></tr>
           <tr><td>Gross retail value @ MSRP</td><td class="right">${money(t.retailRevenue)}</td></tr>
         </table>
       </div>
 
-      <div class="pt-section"><h4>Wholesale path</h4>
+      <div class="pt-section"><h4>Wholesale path (store buys upfront — sell-through not applicable)</h4>
         <table>
-          <tr><td>Revenue (store buys upfront)</td><td class="right">${money(t.wholesaleRevenue)}</td></tr>
+          <tr><td>Gross wholesale revenue</td><td class="right">${money(whoGross)}</td></tr>
+          <tr><td>Less freebies (${state.trial.freebiePct}%)</td><td class="right">−${money(whoFbLoss)}</td></tr>
+          <tr><td>Net wholesale revenue</td><td class="right">${money(whoNet)}</td></tr>
           <tr><td>Less COGS</td><td class="right">−${money(t.totalCogs)}</td></tr>
-          <tr><td><b>Our profit</b></td><td class="right green">${money(whoProfit)}</td></tr>
+          <tr><td><b>Our wholesale profit</b></td><td class="right ${sgn(whoProfit)}">${money(whoProfit)}</td></tr>
         </table>
       </div>
 
-      <div class="pt-section"><h4>Consignment path (full sell-through)</h4>
+      <div class="pt-section"><h4>Consignment path</h4>
         <table>
-          <tr><td>Our payout from sales</td><td class="right">${money(t.consignmentPayout)}</td></tr>
+          <tr><td>Gross consignment payout (100% sell-through)</td><td class="right">${money(t.consignmentPayout)}</td></tr>
+          <tr><td>After ${state.trial.sellThroughPct}% sell-through</td><td class="right">${money(conAfterSt)}</td></tr>
+          <tr><td>After ${state.trial.freebiePct}% freebies</td><td class="right">${money(conAfterFb)}</td></tr>
           <tr><td>Less COGS</td><td class="right">−${money(t.totalCogs)}</td></tr>
-          <tr><td><b>Our profit</b></td><td class="right green">${money(conProfit)}</td></tr>
-        </table>
-      </div>
-
-      <div class="pt-section"><h4>After 10–20% merchandising freebies</h4>
-        <table>
-          <tr><td>Wholesale profit @ 10% freebies</td><td class="right">${money(lo.whoProfit)}</td></tr>
-          <tr><td>Wholesale profit @ 20% freebies</td><td class="right">${money(hi.whoProfit)}</td></tr>
-          <tr><td>Consignment profit @ 10% freebies</td><td class="right">${money(lo.conProfit)}</td></tr>
-          <tr><td>Consignment profit @ 20% freebies</td><td class="right">${money(hi.conProfit)}</td></tr>
+          <tr><td><b>Our consignment profit</b></td><td class="right ${sgn(conProfit)}">${money(conProfit)}</td></tr>
         </table>
       </div>
 
       <div class="pt-assume">
-        <b>Assumptions:</b> Retail prices fixed at MSRP. Unsold consignment stock remains our property. Sales reconciled monthly. Stores may not discount without written approval. Box cost: $8.90 if watch cost > $40, else $6.90. Merchandising freebies: 10–20% of units shipped given to store for marketing / sampling at zero revenue but full COGS.
+        <b>Assumptions:</b> Retail prices fixed at MSRP. Unsold consignment stock remains our property. Sales reconciled monthly. Stores may not discount without written approval. Box cost: $8.90 if watch cost > $40, else $6.90. Freebies: units shipped at zero revenue but full COGS. Sell-through applies only to consignment (wholesale is paid upfront on all paid units).
       </div>
     </div>`;
   }
