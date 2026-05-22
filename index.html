@@ -699,11 +699,13 @@ const LEAD_DEFAULT = '~12 weeks from PO';
    "Watch cost" is the factory price at the chosen qty (see priceByQty).
    Box cost rule: $8.90 if watch cost > $40, else $6.90.
 */
+// Canonical per-product watch costs (fixed regardless of order qty).
+// These match the pricing doc's "Product Cost Breakdown" table exactly.
 const COMMERCIAL = {
-  auto1:  { label:'Premium Auto', retail:599, wholesale:329, storeCommission:0.30 },
-  auto2:  { label:'Auto',         retail:499, wholesale:275, storeCommission:0.30 },
-  chrono: { label:'Chrono',       retail:199, wholesale:99,  storeCommission:0.30 },
-  quartz: { label:'Quartz',       retail:150, wholesale:75,  storeCommission:0.20 },
+  auto1:  { label:'Premium Auto', watchCost:177, retail:599, wholesale:329, storeCommission:0.30 },
+  auto2:  { label:'Auto',         watchCost:142, retail:499, wholesale:275, storeCommission:0.30 },
+  chrono: { label:'Chrono',       watchCost:30,  retail:199, wholesale:99,  storeCommission:0.30 },
+  quartz: { label:'Quartz',       watchCost:20,  retail:150, wholesale:75,  storeCommission:0.20 },
 };
 const COLLECTION_SIZE = 3;
 const FREEBIE_LOW = 0.10, FREEBIE_HIGH = 0.20;
@@ -717,17 +719,21 @@ function commercialForBuild(b){
   const mvOpt = CONFIG.categories[mi].options[b.selections[mi]];
   const c = commercialFor(mvOpt.id);
   if(!c) return null;
-  const watchCost = (mvOpt.priceByQty && mvOpt.priceByQty[b.qty]) || mvOpt.base || 0;
+  // Use the canonical fixed watchCost (matches pricing doc), not qty-dependent priceByQty.
+  // This keeps Retail / Wholesale / Consignment economics fixed per product, as in the doc.
+  const watchCost = c.watchCost;
   const boxCost = boxCostFor(watchCost);
   const trueCost = Math.round((watchCost + boxCost)*100)/100;
   const ourWholesaleProfit = Math.round((c.wholesale - trueCost)*100)/100;
+  const storeMargin = (c.retail - c.wholesale) / c.retail; // store margin on wholesale path
+  const storeKeeps = Math.round(c.retail * c.storeCommission * 100)/100;
   const storePayout = Math.round(c.retail * (1 - c.storeCommission)*100)/100;
   const ourConsignmentProfit = Math.round((storePayout - trueCost)*100)/100;
   return {
     label: c.label, retail: c.retail, wholesale: c.wholesale,
-    storeCommission: c.storeCommission, storePayout,
+    storeCommission: c.storeCommission, storeKeeps, storePayout,
     watchCost, boxCost, trueCost,
-    ourWholesaleProfit, ourConsignmentProfit,
+    storeMargin, ourWholesaleProfit, ourConsignmentProfit,
   };
 }
 const LEAD_WHITE   = '~60 days from PO';
@@ -886,12 +892,16 @@ function renderBuildList(){
     const lt = leadTimeForBuild(b);
     const cm = commercialForBuild(b);
     const cmHtml = cm ? `<div class="commercial">
-      <div class="commercial-hd">${escHtml(cm.label)} · store trial economics (per unit)</div>
+      <div class="commercial-hd">${escHtml(cm.label)} · store trial economics (per unit, fixed program)</div>
       <div class="commercial-grid">
-        <span class="lbl">Retail (MSRP)</span><span class="val">${money(cm.retail)}</span>
-        <span class="lbl">True unit cost</span><span class="val">${money2(cm.trueCost)} <small style="color:var(--muted);font-weight:400">(watch ${money2(cm.watchCost)} + box ${money2(cm.boxCost)})</small></span>
-        <span class="lbl">Wholesale price</span><span class="val">${money(cm.wholesale)} <small style="color:#0a7a3f;font-weight:600">+${money2(cm.ourWholesaleProfit)}</small></span>
-        <span class="lbl">Consignment ${Math.round(cm.storeCommission*100)}/${Math.round((1-cm.storeCommission)*100)}</span><span class="val">${money2(cm.storePayout)} <small style="color:#0a7a3f;font-weight:600">+${money2(cm.ourConsignmentProfit)}</small></span>
+        <span class="lbl">Retail Price (MSRP)</span><span class="val">${money(cm.retail)}</span>
+        <span class="lbl">True Unit Cost</span><span class="val">${money2(cm.trueCost)} <small style="color:var(--muted);font-weight:400">(watch ${money2(cm.watchCost)} + box ${money2(cm.boxCost)})</small></span>
+        <span class="lbl">Wholesale Price</span><span class="val">${money(cm.wholesale)} <small style="color:var(--muted);font-weight:400">(store margin ${(cm.storeMargin*100).toFixed(1)}%)</small></span>
+        <span class="lbl">Our Wholesale Profit</span><span class="val green">+${money2(cm.ourWholesaleProfit)}</span>
+        <span class="lbl">Consignment Split</span><span class="val">Store ${Math.round(cm.storeCommission*100)}% / Us ${Math.round((1-cm.storeCommission)*100)}%</span>
+        <span class="lbl">Store Keeps</span><span class="val">${money2(cm.storeKeeps)}</span>
+        <span class="lbl">Consignment Payout to Us</span><span class="val">${money2(cm.storePayout)}</span>
+        <span class="lbl">Our Consignment Profit</span><span class="val green">+${money2(cm.ourConsignmentProfit)}</span>
       </div>
     </div>` : '';
     return `<div class="build-card">
@@ -1047,12 +1057,16 @@ function renderPrintPO(){
     const meta = [b.optionsByCat[1], b.optionsByCat[2], b.optionsByCat[3]].filter(Boolean).join(' · ');
     const cm = commercialForBuild(b);
     const cmHtml = cm ? `<div class="ppo-commercial">
-      <div class="ppo-commercial-hd">${escHtml(cm.label)} · store trial economics (per unit)</div>
+      <div class="ppo-commercial-hd">${escHtml(cm.label)} · store trial economics (per unit, fixed program)</div>
       <div class="ppo-commercial-grid">
-        <span class="lbl">Retail (MSRP)</span><span class="val">${money(cm.retail)}</span>
-        <span class="lbl">True unit cost</span><span class="val">${money2(cm.trueCost)} <span style="color:#888;font-weight:400;">(${money2(cm.watchCost)}+${money2(cm.boxCost)})</span></span>
-        <span class="lbl">Wholesale</span><span class="val">${money(cm.wholesale)} <span class="gain">+${money2(cm.ourWholesaleProfit)}</span></span>
-        <span class="lbl">Consignment ${Math.round(cm.storeCommission*100)}/${Math.round((1-cm.storeCommission)*100)}</span><span class="val">${money2(cm.storePayout)} <span class="gain">+${money2(cm.ourConsignmentProfit)}</span></span>
+        <span class="lbl">Retail Price (MSRP)</span><span class="val">${money(cm.retail)}</span>
+        <span class="lbl">True Unit Cost</span><span class="val">${money2(cm.trueCost)} <span style="color:#888;font-weight:400;">(${money2(cm.watchCost)}+${money2(cm.boxCost)})</span></span>
+        <span class="lbl">Wholesale Price</span><span class="val">${money(cm.wholesale)} <span style="color:#888;font-weight:400;">(store margin ${(cm.storeMargin*100).toFixed(1)}%)</span></span>
+        <span class="lbl">Our Wholesale Profit</span><span class="val"><span class="gain">+${money2(cm.ourWholesaleProfit)}</span></span>
+        <span class="lbl">Consignment Split</span><span class="val">Store ${Math.round(cm.storeCommission*100)}% / Us ${Math.round((1-cm.storeCommission)*100)}%</span>
+        <span class="lbl">Store Keeps</span><span class="val">${money2(cm.storeKeeps)}</span>
+        <span class="lbl">Consignment Payout to Us</span><span class="val">${money2(cm.storePayout)}</span>
+        <span class="lbl">Our Consignment Profit</span><span class="val"><span class="gain">+${money2(cm.ourConsignmentProfit)}</span></span>
       </div>
     </div>` : '';
     return `<div class="ppo-card">
