@@ -151,8 +151,9 @@
   .btn-secondary:active{transform:scale(.985);}
   .btn-ghost{margin-top:8px; width:100%; padding:11px; border:none; background:transparent; color:var(--muted); font-size:13px; cursor:pointer; font-family:inherit; text-decoration:underline;}
   .build-list{border:1px solid var(--line); border-radius:14px; padding:4px 12px; margin-bottom:10px;}
-  .build-item{display:flex; gap:10px; padding:10px 0; border-bottom:1px solid var(--line); font-size:13px; align-items:center;}
-  .build-item:last-child{border-bottom:none;}
+  .build-card{padding:10px 0; border-bottom:1px solid var(--line);}
+  .build-card:last-child{border-bottom:none;}
+  .build-item{display:flex; gap:10px; font-size:13px; align-items:center;}
   .bi-thumb{width:44px; height:44px; object-fit:contain; flex-shrink:0;}
   .bi-main{flex:1; min-width:0;}
   .bi-sku{font-weight:700; font-size:10px; letter-spacing:.8px; color:var(--accent);}
@@ -161,6 +162,38 @@
   .bi-total{font-weight:700; color:var(--ink); white-space:nowrap; text-align:right; font-size:13px;}
   .bi-rm{background:none; border:none; color:var(--muted); font-size:20px; line-height:1; cursor:pointer; padding:0 4px;}
   .combined{display:flex; justify-content:space-between; padding:12px 0 4px; font-weight:700; font-size:16px; border-top:2px solid var(--ink); margin-top:6px;}
+
+  /* ---- Commercial breakdown (per card) ---- */
+  .commercial{margin-top:8px; padding-top:8px; border-top:1px dashed var(--line); font-size:11px; color:var(--ink); line-height:1.45;}
+  .commercial-hd{font-weight:700; font-size:10px; text-transform:uppercase; letter-spacing:.7px; color:var(--muted); margin-bottom:5px;}
+  .commercial-grid{display:grid; grid-template-columns:1fr 1fr; gap:4px 14px;}
+  .commercial-grid .lbl{color:var(--muted); font-size:10.5px;}
+  .commercial-grid .val{font-weight:600; text-align:right;}
+  .commercial-grid .val.green{color:#0a7a3f;}
+
+  /* ---- Collection counter ---- */
+  .coll-counter{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 14px; background:#F4F4F2; border-radius:12px; margin-bottom:10px; font-size:13px;}
+  .coll-counter.complete{background:#0a7a3f; color:#fff;}
+  .coll-counter .cc-label{font-weight:600;}
+  .coll-counter .cc-dots{display:flex; gap:6px;}
+  .coll-counter .cc-dot{width:9px; height:9px; border-radius:50%; background:rgba(0,0,0,.18);}
+  .coll-counter .cc-dot.on{background:var(--ink);}
+  .coll-counter.complete .cc-dot{background:rgba(255,255,255,.4);}
+  .coll-counter.complete .cc-dot.on{background:#fff;}
+
+  /* ---- Trial summary (3+ models) ---- */
+  .trial{margin:14px 0 8px; padding:14px 16px; border:2px solid var(--ink); border-radius:14px; background:#fafafa;}
+  .trial h4{font-family:'Anton',sans-serif; font-size:15px; letter-spacing:.8px; margin-bottom:8px;}
+  .trial .t-sub{font-size:11px; color:var(--muted); margin-bottom:10px; line-height:1.5;}
+  .trial .t-section{margin-top:10px;}
+  .trial .t-section h5{font-size:11px; text-transform:uppercase; letter-spacing:.7px; color:var(--muted); font-weight:700; margin-bottom:5px;}
+  .trial .t-row{display:flex; justify-content:space-between; padding:3px 0; font-size:12.5px;}
+  .trial .t-row.total{font-weight:700; border-top:1px solid var(--line); margin-top:4px; padding-top:6px;}
+  .trial .t-row .val.green{color:#0a7a3f; font-weight:700;}
+  .trial .t-fbz{margin-top:10px; padding:10px; background:#fff; border-radius:10px;}
+  .trial .t-fbz .fb-r{display:flex; justify-content:space-between; font-size:11.5px; padding:2px 0;}
+  .trial .t-fbz .fb-r .v{font-weight:700;}
+  .trial .t-assume{margin-top:10px; padding-top:8px; border-top:1px dashed var(--line); font-size:10.5px; color:var(--muted); line-height:1.55;}
   .po-form{display:flex; flex-direction:column; gap:6px; margin:6px 0 4px;}
   .po-form label{font-size:11px; color:var(--muted); margin:4px 0 -2px; text-transform:uppercase; letter-spacing:.5px;}
   .po-form input, .po-form textarea{width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px; font-family:inherit; font-size:14px; box-sizing:border-box; color:var(--ink); background:#fff;}
@@ -208,6 +241,22 @@
   #printPO .ppo-card-opts{font-size:11px; color:#666; margin-top:3px; line-height:1.5;}
   #printPO .ppo-card-row{display:flex; justify-content:space-between; font-size:12px; margin-top:10px; padding-top:10px; border-top:1px solid #eee;}
   #printPO .ppo-card-row .lt{font-weight:700; font-size:15px;}
+  #printPO .ppo-commercial{margin-top:10px; padding-top:8px; border-top:1px dashed #ddd; font-size:10.5px; color:#444; line-height:1.55;}
+  #printPO .ppo-commercial-hd{text-transform:uppercase; letter-spacing:1px; color:#888; font-size:9px; font-weight:700; margin-bottom:4px;}
+  #printPO .ppo-commercial-grid{display:grid; grid-template-columns:1fr 1fr; gap:2px 16px;}
+  #printPO .ppo-commercial-grid .lbl{color:#777;}
+  #printPO .ppo-commercial-grid .val{text-align:right; font-weight:600;}
+  #printPO .ppo-commercial-grid .val .gain{color:#0a7a3f; font-weight:700;}
+  #printPO .ppo-trial{margin-top:18px; padding:16px 18px; border:2px solid #111; border-radius:8px; background:#fafafa; page-break-inside:avoid;}
+  #printPO .ppo-trial h3{font-family:'Anton',sans-serif; font-size:16px; letter-spacing:1px; margin-bottom:4px; color:#111;}
+  #printPO .ppo-trial .pt-sub{font-size:10.5px; color:#666; margin-bottom:10px; line-height:1.5;}
+  #printPO .ppo-trial table{font-size:11px; margin-top:6px;}
+  #printPO .ppo-trial th{border-bottom:1px solid #ccc; color:#777;}
+  #printPO .ppo-trial td{border-bottom:1px solid #eee;}
+  #printPO .ppo-trial td.green, #printPO .ppo-trial td.gain{color:#0a7a3f; font-weight:700;}
+  #printPO .ppo-trial .pt-section{margin-top:10px;}
+  #printPO .ppo-trial .pt-section h4{font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#888; font-weight:700; margin-bottom:4px;}
+  #printPO .ppo-trial .pt-assume{margin-top:12px; padding-top:8px; border-top:1px dashed #ccc; font-size:9.5px; color:#777; line-height:1.6;}
 </style>
 </head>
 <body>
@@ -333,7 +382,7 @@ const CONFIG = {
       { id:"auto1",  name:"Miyota 90S5 — Automatic", dial:"auto",   priceByQty:{500:177, 1000:174, 2000:172} },
       { id:"auto2",  name:"Miyota 8N24 — Automatic", dial:"auto",   priceByQty:{500:142, 1000:140, 2000:138} },
       { id:"quartz", name:"Quartz",                  dial:"quartz", priceByQty:{500:20,  1000:19.50, 2000:19.25} },
-      { id:"chrono", name:"Chrono — MK II",          dial:"chrono", priceByQty:{500:28,  1000:28,    2000:28} },
+      { id:"chrono", name:"Chrono — MK II",          dial:"chrono", priceByQty:{500:30,  1000:30,    2000:30} },
     ]},
     { id:"casebezel", label:"Case / Bezel", drives:"image", options:[
       { id:"greenred",   name:"Green Case · Red Bezel",   delta:0, imgKey:"greenred",   swatch:["#0a7a3f","#d11e28"] },
@@ -644,6 +693,43 @@ $("next").onclick=()=>cycle(1);
 /* ---------- multi-build / PO ---------- */
 const ADMIN_EMAIL = 'bw@minc.watch';
 const LEAD_DEFAULT = '~12 weeks from PO';
+
+/* ---------- COMMERCIAL PROGRAM ----------
+   Retail / wholesale / consignment economics per movement.
+   "Watch cost" is the factory price at the chosen qty (see priceByQty).
+   Box cost rule: $8.90 if watch cost > $40, else $6.90.
+*/
+const COMMERCIAL = {
+  auto1:  { label:'Premium Auto', retail:599, wholesale:329, storeCommission:0.30 },
+  auto2:  { label:'Auto',         retail:499, wholesale:275, storeCommission:0.30 },
+  chrono: { label:'Chrono',       retail:199, wholesale:99,  storeCommission:0.30 },
+  quartz: { label:'Quartz',       retail:150, wholesale:75,  storeCommission:0.20 },
+};
+const COLLECTION_SIZE = 3;
+const FREEBIE_LOW = 0.10, FREEBIE_HIGH = 0.20;
+
+function commercialFor(movementId){ return COMMERCIAL[movementId] || null; }
+function boxCostFor(watchCost){ return watchCost > 40 ? 8.90 : 6.90; }
+function trueUnitCostFor(watchCost){ return Math.round((watchCost + boxCostFor(watchCost))*100)/100; }
+
+function commercialForBuild(b){
+  const mi = CONFIG.categories.findIndex(c=>c.id==='movement');
+  const mvOpt = CONFIG.categories[mi].options[b.selections[mi]];
+  const c = commercialFor(mvOpt.id);
+  if(!c) return null;
+  const watchCost = (mvOpt.priceByQty && mvOpt.priceByQty[b.qty]) || mvOpt.base || 0;
+  const boxCost = boxCostFor(watchCost);
+  const trueCost = Math.round((watchCost + boxCost)*100)/100;
+  const ourWholesaleProfit = Math.round((c.wholesale - trueCost)*100)/100;
+  const storePayout = Math.round(c.retail * (1 - c.storeCommission)*100)/100;
+  const ourConsignmentProfit = Math.round((storePayout - trueCost)*100)/100;
+  return {
+    label: c.label, retail: c.retail, wholesale: c.wholesale,
+    storeCommission: c.storeCommission, storePayout,
+    watchCost, boxCost, trueCost,
+    ourWholesaleProfit, ourConsignmentProfit,
+  };
+}
 const LEAD_WHITE   = '~60 days from PO';
 function leadTimeForCaseBezel(cbId){
   return cbId === 'whitered' ? LEAD_WHITE : LEAD_DEFAULT;
@@ -705,6 +791,79 @@ function combinedQty(){   return state.builds.reduce((s,b)=> s + b.qty,       0)
 
 function escHtml(s){ return String(s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
+function trialTotals(){
+  // Aggregate across all builds (qty × per-unit numbers from commercialForBuild)
+  // Excludes builds whose movement has no commercial mapping (none currently).
+  let totalUnits=0, totalCogs=0;
+  let retailRevenue=0;       // if all units sold at MSRP
+  let wholesaleRevenue=0;    // if all units sold to store at wholesale
+  let consignmentPayout=0;   // if all units sell through at consignment payout rate
+  state.builds.forEach(b=>{
+    const cm = commercialForBuild(b); if(!cm) return;
+    totalUnits        += b.qty;
+    totalCogs         += cm.trueCost * b.qty;
+    retailRevenue     += cm.retail   * b.qty;
+    wholesaleRevenue  += cm.wholesale* b.qty;
+    consignmentPayout += cm.storePayout * b.qty;
+  });
+  return { totalUnits, totalCogs, retailRevenue, wholesaleRevenue, consignmentPayout };
+}
+
+function renderTrialHTML(){
+  const t = trialTotals();
+  const whoProfit = t.wholesaleRevenue - t.totalCogs;
+  const conProfit = t.consignmentPayout - t.totalCogs;
+  // Freebie scenarios: assume X% of units given as merchandising freebies.
+  // We still pay COGS on all units; revenue side scales by (1 - freebie%).
+  const scen = (fb)=>{
+    const whoRev = t.wholesaleRevenue * (1 - fb);
+    const conRev = t.consignmentPayout * (1 - fb);
+    return {
+      fbPct: Math.round(fb*100),
+      whoRev, whoProfit: whoRev - t.totalCogs,
+      conRev, conProfit: conRev - t.totalCogs,
+    };
+  };
+  const lo = scen(FREEBIE_LOW), hi = scen(FREEBIE_HIGH);
+  return `<div class="trial">
+    <h4>Store Trial · 3-model collection</h4>
+    <div class="t-sub">Aggregate economics across your full collection at the quantities you've selected. Retail prices are fixed MSRP. Wholesale = store buys upfront. Consignment = store keeps a share, we receive the rest on each sale.</div>
+
+    <div class="t-section">
+      <h5>Volume</h5>
+      <div class="t-row"><span>Total units</span><span class="val">${t.totalUnits.toLocaleString('en-US')}</span></div>
+      <div class="t-row"><span>Total COGS (true unit cost × units)</span><span class="val">${money(t.totalCogs)}</span></div>
+      <div class="t-row"><span>Gross retail value @ MSRP</span><span class="val">${money(t.retailRevenue)}</span></div>
+    </div>
+
+    <div class="t-section">
+      <h5>Wholesale path</h5>
+      <div class="t-row"><span>Revenue (store buys upfront)</span><span class="val">${money(t.wholesaleRevenue)}</span></div>
+      <div class="t-row"><span>Less COGS</span><span class="val">−${money(t.totalCogs)}</span></div>
+      <div class="t-row total"><span>Our profit</span><span class="val green">${money(whoProfit)}</span></div>
+    </div>
+
+    <div class="t-section">
+      <h5>Consignment path (full sell-through)</h5>
+      <div class="t-row"><span>Our payout from sales</span><span class="val">${money(t.consignmentPayout)}</span></div>
+      <div class="t-row"><span>Less COGS</span><span class="val">−${money(t.totalCogs)}</span></div>
+      <div class="t-row total"><span>Our profit</span><span class="val green">${money(conProfit)}</span></div>
+    </div>
+
+    <div class="t-fbz">
+      <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.7px; color:var(--muted); margin-bottom:6px;">After merchandising freebies (10–20% of units given free)</div>
+      <div class="fb-r"><span>Wholesale profit @ 10% freebies</span><span class="v">${money(lo.whoProfit)}</span></div>
+      <div class="fb-r"><span>Wholesale profit @ 20% freebies</span><span class="v">${money(hi.whoProfit)}</span></div>
+      <div class="fb-r" style="margin-top:4px;border-top:1px dashed var(--line);padding-top:6px;"><span>Consignment profit @ 10% freebies</span><span class="v">${money(lo.conProfit)}</span></div>
+      <div class="fb-r"><span>Consignment profit @ 20% freebies</span><span class="v">${money(hi.conProfit)}</span></div>
+    </div>
+
+    <div class="t-assume">
+      <b>Assumptions:</b> Retail prices fixed at MSRP. Unsold consignment stock remains our property. Sales reconciled monthly. Stores may not discount without written approval. Box cost rule: $8.90 if watch cost > $40, else $6.90. Merchandising freebies: 10–20% of units shipped given to store for marketing / sampling at zero revenue but full COGS.
+    </div>
+  </div>`;
+}
+
 function renderBuildList(){
   if(!state.builds.length){
     $('poSection').classList.add('hidden');
@@ -713,24 +872,50 @@ function renderBuildList(){
   }
   $('poSection').classList.remove('hidden');
   $('addBuildBtn').textContent = '+ Add this model to PO (as ' + sfmxSku(state.builds.length) + ')';
-  $('buildList').innerHTML = state.builds.map((b,i)=>{
+  // collection counter on top
+  const n = state.builds.length, complete = n >= COLLECTION_SIZE;
+  const dots = Array.from({length: Math.max(COLLECTION_SIZE, n)}, (_,k)=>`<span class="cc-dot${k<n?' on':''}"></span>`).join('');
+  const counterHtml = `<div class="coll-counter ${complete?'complete':''}">
+    <span class="cc-label">${complete?`Collection complete · ${n}/${COLLECTION_SIZE}`:`Building your collection · ${n}/${COLLECTION_SIZE}`}</span>
+    <span class="cc-dots">${dots}</span>
+  </div>`;
+
+  const cards = state.builds.map((b,i)=>{
     const img = IMAGES[b.imgKey] || IMAGES[(b.imgKey||'').replace(/_carbon_/,'_standard_')] || '';
     const meta = [b.optionsByCat[1], b.optionsByCat[2], b.optionsByCat[3]].filter(Boolean).join(' · ');
     const lt = leadTimeForBuild(b);
-    return `<div class="build-item">
-      <img class="bi-thumb" src="${img}" alt="">
-      <div class="bi-main">
-        <div class="bi-sku">${b.sku}</div>
-        <div class="bi-model">${escHtml(b.modelLabel)}</div>
-        <div class="bi-meta">${b.qty.toLocaleString('en-US')} × ${money2(b.perUnit)}</div>
-        <div class="bi-meta">${escHtml(meta)}${b.extraStraps?` · +${b.extraStraps} straps`:''}</div>
-        <div class="bi-meta">Lead time: ${lt}</div>
+    const cm = commercialForBuild(b);
+    const cmHtml = cm ? `<div class="commercial">
+      <div class="commercial-hd">${escHtml(cm.label)} · store trial economics (per unit)</div>
+      <div class="commercial-grid">
+        <span class="lbl">Retail (MSRP)</span><span class="val">${money(cm.retail)}</span>
+        <span class="lbl">True unit cost</span><span class="val">${money2(cm.trueCost)} <small style="color:var(--muted);font-weight:400">(watch ${money2(cm.watchCost)} + box ${money2(cm.boxCost)})</small></span>
+        <span class="lbl">Wholesale price</span><span class="val">${money(cm.wholesale)} <small style="color:#0a7a3f;font-weight:600">+${money2(cm.ourWholesaleProfit)}</small></span>
+        <span class="lbl">Consignment ${Math.round(cm.storeCommission*100)}/${Math.round((1-cm.storeCommission)*100)}</span><span class="val">${money2(cm.storePayout)} <small style="color:#0a7a3f;font-weight:600">+${money2(cm.ourConsignmentProfit)}</small></span>
       </div>
-      <div class="bi-total">${money(b.lineTotal)}</div>
-      <button class="bi-rm" data-i="${i}" aria-label="Remove">×</button>
+    </div>` : '';
+    return `<div class="build-card">
+      <div class="build-item">
+        <img class="bi-thumb" src="${img}" alt="">
+        <div class="bi-main">
+          <div class="bi-sku">${b.sku}</div>
+          <div class="bi-model">${escHtml(b.modelLabel)}</div>
+          <div class="bi-meta">${b.qty.toLocaleString('en-US')} × ${money2(b.perUnit)}</div>
+          <div class="bi-meta">${escHtml(meta)}${b.extraStraps?` · +${b.extraStraps} straps`:''}</div>
+          <div class="bi-meta">Lead time: ${lt}</div>
+        </div>
+        <div class="bi-total">${money(b.lineTotal)}</div>
+        <button class="bi-rm" data-i="${i}" aria-label="Remove">×</button>
+      </div>
+      ${cmHtml}
     </div>`;
-  }).join('') +
-  `<div class="combined"><span>PO total (${combinedQty().toLocaleString('en-US')} units)</span><span>${money(combinedTotal())}</span></div>`;
+  }).join('');
+
+  const trial = complete ? renderTrialHTML() : '';
+
+  $('buildList').innerHTML = counterHtml + cards +
+    `<div class="combined"><span>PO total (${combinedQty().toLocaleString('en-US')} units)</span><span>${money(combinedTotal())}</span></div>` +
+    trial;
 
   $('buildList').querySelectorAll('.bi-rm').forEach(b=>{
     b.onclick = ()=> removeBuild(+b.dataset.i);
@@ -860,6 +1045,16 @@ function renderPrintPO(){
   const cards = state.builds.map(b=>{
     const img = IMAGES[b.imgKey] || IMAGES[(b.imgKey||'').replace(/_carbon_/,'_standard_')] || '';
     const meta = [b.optionsByCat[1], b.optionsByCat[2], b.optionsByCat[3]].filter(Boolean).join(' · ');
+    const cm = commercialForBuild(b);
+    const cmHtml = cm ? `<div class="ppo-commercial">
+      <div class="ppo-commercial-hd">${escHtml(cm.label)} · store trial economics (per unit)</div>
+      <div class="ppo-commercial-grid">
+        <span class="lbl">Retail (MSRP)</span><span class="val">${money(cm.retail)}</span>
+        <span class="lbl">True unit cost</span><span class="val">${money2(cm.trueCost)} <span style="color:#888;font-weight:400;">(${money2(cm.watchCost)}+${money2(cm.boxCost)})</span></span>
+        <span class="lbl">Wholesale</span><span class="val">${money(cm.wholesale)} <span class="gain">+${money2(cm.ourWholesaleProfit)}</span></span>
+        <span class="lbl">Consignment ${Math.round(cm.storeCommission*100)}/${Math.round((1-cm.storeCommission)*100)}</span><span class="val">${money2(cm.storePayout)} <span class="gain">+${money2(cm.ourConsignmentProfit)}</span></span>
+      </div>
+    </div>` : '';
     return `<div class="ppo-card">
       <div class="ppo-card-head">
         <div class="ppo-card-sku">${b.sku}</div>
@@ -875,8 +1070,63 @@ function renderPrintPO(){
         <span>${b.qty.toLocaleString('en-US')} units × ${money2(b.perUnit)} <span style="color:#777;font-size:11px;">· lead ${leadTimeForBuild(b)}</span></span>
         <span class="lt">${money(b.lineTotal)}</span>
       </div>
+      ${cmHtml}
     </div>`;
   }).join('');
+
+  // Trial summary if collection is complete
+  let trialHtml = '';
+  if(state.builds.length >= COLLECTION_SIZE){
+    const t = trialTotals();
+    const whoProfit = t.wholesaleRevenue - t.totalCogs;
+    const conProfit = t.consignmentPayout - t.totalCogs;
+    const scen = (fb)=>({
+      whoProfit: t.wholesaleRevenue*(1-fb) - t.totalCogs,
+      conProfit: t.consignmentPayout*(1-fb) - t.totalCogs,
+    });
+    const lo = scen(FREEBIE_LOW), hi = scen(FREEBIE_HIGH);
+    trialHtml = `<div class="ppo-trial">
+      <h3>Store Trial · ${state.builds.length}-Model Collection Economics</h3>
+      <div class="pt-sub">Aggregate trial economics for the full collection at the quantities selected. Retail at fixed MSRP. Wholesale = store buys upfront. Consignment = store keeps a share, we receive the rest on each sale.</div>
+
+      <div class="pt-section"><h4>Volume</h4>
+        <table>
+          <tr><td>Total units</td><td class="right">${t.totalUnits.toLocaleString('en-US')}</td></tr>
+          <tr><td>Total COGS (true unit cost × units)</td><td class="right">${money(t.totalCogs)}</td></tr>
+          <tr><td>Gross retail value @ MSRP</td><td class="right">${money(t.retailRevenue)}</td></tr>
+        </table>
+      </div>
+
+      <div class="pt-section"><h4>Wholesale path</h4>
+        <table>
+          <tr><td>Revenue (store buys upfront)</td><td class="right">${money(t.wholesaleRevenue)}</td></tr>
+          <tr><td>Less COGS</td><td class="right">−${money(t.totalCogs)}</td></tr>
+          <tr><td><b>Our profit</b></td><td class="right green">${money(whoProfit)}</td></tr>
+        </table>
+      </div>
+
+      <div class="pt-section"><h4>Consignment path (full sell-through)</h4>
+        <table>
+          <tr><td>Our payout from sales</td><td class="right">${money(t.consignmentPayout)}</td></tr>
+          <tr><td>Less COGS</td><td class="right">−${money(t.totalCogs)}</td></tr>
+          <tr><td><b>Our profit</b></td><td class="right green">${money(conProfit)}</td></tr>
+        </table>
+      </div>
+
+      <div class="pt-section"><h4>After 10–20% merchandising freebies</h4>
+        <table>
+          <tr><td>Wholesale profit @ 10% freebies</td><td class="right">${money(lo.whoProfit)}</td></tr>
+          <tr><td>Wholesale profit @ 20% freebies</td><td class="right">${money(hi.whoProfit)}</td></tr>
+          <tr><td>Consignment profit @ 10% freebies</td><td class="right">${money(lo.conProfit)}</td></tr>
+          <tr><td>Consignment profit @ 20% freebies</td><td class="right">${money(hi.conProfit)}</td></tr>
+        </table>
+      </div>
+
+      <div class="pt-assume">
+        <b>Assumptions:</b> Retail prices fixed at MSRP. Unsold consignment stock remains our property. Sales reconciled monthly. Stores may not discount without written approval. Box cost: $8.90 if watch cost > $40, else $6.90. Merchandising freebies: 10–20% of units shipped given to store for marketing / sampling at zero revenue but full COGS.
+      </div>
+    </div>`;
+  }
   $('printPO').innerHTML = `
     <div class="ppo-head">
       <div>
@@ -901,6 +1151,7 @@ function renderPrintPO(){
       ${cards}
       <div class="ppo-total"><span>Total · ${combinedQty().toLocaleString('en-US')} units</span><span>${money(combinedTotal())}</span></div>
     </div>
+    ${trialHtml}
     ${state.po.notes ? `<div class="ppo-section"><h3>Notes</h3><div style="font-size:11px;white-space:pre-wrap;line-height:1.6;">${escHtml(state.po.notes)}</div></div>` : ''}
     <div class="ppo-foot">
       All pricing indicative; final pricing confirmed on PO acceptance. Lead time counted from PO date.<br>
