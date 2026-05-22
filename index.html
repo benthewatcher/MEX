@@ -266,6 +266,7 @@
   <div id="poSection" class="hidden">
     <div class="po-header">Your PO</div>
     <div class="build-list" id="buildList"></div>
+    <button class="btn-secondary" id="addAnotherBtn">+ Configure another series</button>
     <div class="leadtime">Lead time: ~12 weeks from PO</div>
 
     <div class="po-header">Partner details</div>
@@ -285,7 +286,7 @@
     <button class="btn-ghost" id="shareLinkBtn">Copy shareable link</button>
   </div>
 
-  <button class="btn-ghost" id="closeBtn">Keep configuring</button>
+  <button class="btn-ghost" id="closeBtn">← Back to configurator</button>
 </div>
 
 <div id="printPO"></div>
@@ -604,8 +605,13 @@ function combinedQty(){   return state.builds.reduce((s,b)=> s + b.qty,       0)
 function escHtml(s){ return String(s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
 function renderBuildList(){
-  if(!state.builds.length){ $('poSection').classList.add('hidden'); return; }
+  if(!state.builds.length){
+    $('poSection').classList.add('hidden');
+    $('addBuildBtn').textContent = '+ Add this model to PO';
+    return;
+  }
   $('poSection').classList.remove('hidden');
+  $('addBuildBtn').textContent = '+ Add this model to PO (as ' + sfmxSku(state.builds.length) + ')';
   $('buildList').innerHTML = state.builds.map((b,i)=>{
     const img = IMAGES[b.imgKey] || IMAGES[(b.imgKey||'').replace(/_carbon_/,'_standard_')] || '';
     const meta = [b.optionsByCat[1], b.optionsByCat[2], b.optionsByCat[3]].filter(Boolean).join(' · ');
@@ -853,6 +859,7 @@ $("closeBtn").onclick=closeSheet;
 $("sheetBg").onclick=closeSheet;
 
 $("addBuildBtn").onclick = addToBuild;
+$("addAnotherBtn").onclick = closeSheet;
 $("sendPOBtn").onclick   = emailPO;
 $("printPOBtn").onclick  = printPO;
 $("shareLinkBtn").onclick= copyShareLink;
